@@ -10,7 +10,7 @@ pkg_check_modules(LIBUSB REQUIRED IMPORTED_TARGET libusb-1.0)
 set(LIBPCAP_HEADERS /opt/homebrew/opt/libpcap/include)
 set(LIBPCAP_LIBS /opt/homebrew/opt/libpcap/lib)
 
-set(LIB_ROOT_PATH ./rtl8812au-monitor-pcap)
+set(LIB_ROOT_PATH ./rtl8812)
 
 add_library(Rtl8812auNet
     SHARED

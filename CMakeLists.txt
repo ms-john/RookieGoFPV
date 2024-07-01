@@ -24,8 +24,8 @@ include_directories(
     ${GSTREAMER_INCLUDE_DIRS}
     ${LIBUSB_INCLUDE_DIRS}
     ${LIBPCAP_HEADERS}
-    rtl8812au-monitor-pcap/src
-    rtl8812au-monitor-pcap/hal
+    rtl8812/src
+    rtl8812/hal
 )
 
 file(GLOB_RECURSE WFB_NG_SOURCES
