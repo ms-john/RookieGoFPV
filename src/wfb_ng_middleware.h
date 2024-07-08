@@ -17,8 +17,8 @@ public:
 	explicit wfb_ng_middleware(QObject *parent = nullptr);
 	~wfb_ng_middleware();
 
-	Q_INVOKABLE bool Start(const QString &vidPid, uint8_t channel, int channelWidth, const QString &keyPath);
-	Q_INVOKABLE bool Stop();
+	Q_INVOKABLE bool start(const QString &vidPid, uint8_t channel, int channelWidth, const QString &keyPath);
+	Q_INVOKABLE bool stop();
 
 private:
 	qulonglong m_wfbng_frame_count;

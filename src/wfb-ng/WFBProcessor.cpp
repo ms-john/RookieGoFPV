@@ -169,6 +169,7 @@ int Aggregator::get_block_ring_idx(uint64_t block_idx)
 void Aggregator::process_packet(
 	const uint8_t *buf, size_t size, uint8_t wlan_idx, const uint8_t *antenna, const int8_t *rssi)
 {
+	printf("received packet size: %d\n", size);
 	wsession_data_t new_session_data;
 	count_p_all += 1;
 

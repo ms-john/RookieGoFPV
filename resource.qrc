@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/main.qml</file>
+        <file>assets/refresh.svg</file>
     </qresource>
 </RCC>

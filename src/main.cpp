@@ -20,6 +20,10 @@ int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 
+        app.setOrganizationName("NULL");
+        app.setOrganizationDomain("NULL");
+        app.setApplicationName("RookieGOFPV_OPENIPC");
+
 	gst_init(&argc, &argv);
 
 	auto main_width = 800+200;
@@ -34,7 +38,7 @@ int main(int argc, char *argv[])
 	QMainWindow mainwindow;
 	mainwindow.resize(main_width, main_height);
 	mainwindow.setObjectName("rootWidget");
-	mainwindow.setWindowTitle("RookieGoFPV for WFB-NG (macOS)");
+	mainwindow.setWindowTitle("RookieGoFPV for WFB-NG/OpenIPC-FPV (macOS)");
 
 	QWidget *centralWidget = new QWidget(&mainwindow);
 	QHBoxLayout *layout = new QHBoxLayout(centralWidget);
