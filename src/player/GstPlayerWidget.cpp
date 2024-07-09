@@ -12,30 +12,23 @@ namespace app
 {
 namespace player
 {
-
-bool GstPlayerWidget::play()
+GstPlayerThread::GstPlayerThread(QObject *parent, WId windowId)
+	: QThread(parent)
 {
-	Q_ASSERT(m_pipeline);
-	auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-	return ret;
-}
-bool GstPlayerWidget::pause()
-{
-	Q_ASSERT(m_pipeline);
-	auto ret = gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
-	if (ret == GST_STATE_CHANGE_FAILURE)
-		qDebug() << "Unable to set the pipeline to the paused state.";
-	return ret;
-}
-bool GstPlayerWidget::stop()
-{
-	Q_ASSERT(m_pipeline);
-	auto ret = gst_element_set_state(m_pipeline, GST_STATE_NULL);
-	gst_element_set_state(m_pipeline, GST_STATE_NULL);
-	return ret;
+	this->windowId = windowId;
 }
 
-bool GstPlayerWidget::setPlayUri(const QString &uri)
+GstPlayerThread::~GstPlayerThread()
+{
+	if (m_pipeline) {
+		gst_object_unref(m_pipeline);
+	}
+}
+
+void GstPlayerThread::run()
+{ exec(); }
+
+bool GstPlayerThread::setPlayUri(const QString &uri)
 {
 	m_play_uri = uri;
 	QString autovideosink = " ! glimagesink name=ms-videosink";
@@ -48,11 +41,7 @@ bool GstPlayerWidget::setPlayUri(const QString &uri)
 	}
 
 	GError *error = nullptr;
-	if (m_pipeline == nullptr) {
-		qDebug() << "pipeline is null";
-	}
 	m_pipeline = gst_parse_launch(url.c_str(), &error);
-	// 打印 error
 	if (error) {
 		qDebug() << "Failed to create pipeline: " << error->message;
 		g_error_free(error);
@@ -64,10 +53,9 @@ bool GstPlayerWidget::setPlayUri(const QString &uri)
 	}
 	GstElement *udp_src = gst_bin_get_by_name(GST_BIN(m_pipeline), "ms-udp");
 	if (udp_src) {
-		printf("udp_src is not null\n");
-		g_object_set(udp_src,
-					 "caps",
-					 gst_caps_from_string("application/x-rtp, media=video, clock-rate=90000, encoding-name=H265"),
+		g_object_set(udp_src, "caps",
+					 gst_caps_from_string("application/x-rtp, media=video, "
+										  "clock-rate=90000, encoding-name=H265"),
 					 nullptr);
 	}
 	m_sink = gst_bin_get_by_name(GST_BIN(m_pipeline), "ms-videosink");
@@ -76,15 +64,65 @@ bool GstPlayerWidget::setPlayUri(const QString &uri)
 	auto ret = gst_element_set_state(m_pipeline, GST_STATE_READY);
 	return ret;
 }
-GstPlayerWidget::GstPlayerWidget(QWidget *parent)
+
+bool GstPlayerThread::play()
 {
-	windowId = winId();
-}
-GstPlayerWidget::~GstPlayerWidget()
-{
-	gst_object_unref(m_pipeline);
+	Q_ASSERT(m_pipeline);
+	auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+	return ret;
 }
 
+bool GstPlayerThread::pause()
+{
+	//  Q_ASSERT(m_pipeline);
+	auto ret = gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
+	if (ret == GST_STATE_CHANGE_FAILURE)
+		qDebug() << "Unable to set the pipeline to the paused state.";
+	return ret;
 }
+
+bool GstPlayerThread::stop()
+{
+	Q_ASSERT(m_pipeline);
+	auto ret = gst_element_set_state(m_pipeline, GST_STATE_NULL);
+	gst_element_set_state(m_pipeline, GST_STATE_NULL);
+	return ret;
 }
+
+GstPlayerWidget::GstPlayerWidget(QWidget *parent)
+	: QWidget(parent)
+{
+	m_thread = new GstPlayerThread(this, this->winId());
+	m_thread->start();
 }
+
+GstPlayerWidget::~GstPlayerWidget()
+{
+	m_thread->quit();
+	m_thread->wait();
+	delete m_thread;
+}
+
+bool GstPlayerWidget::setPlayUri(const QString &uri)
+{
+	return m_thread->setPlayUri(uri);
+}
+
+bool GstPlayerWidget::play()
+{
+	return m_thread->play();
+}
+
+bool GstPlayerWidget::pause()
+{
+	return m_thread->pause();
+}
+
+bool GstPlayerWidget::stop()
+{
+	return m_thread->stop();
+}
+
+} // namespace player
+} // namespace app
+} // namespace ms

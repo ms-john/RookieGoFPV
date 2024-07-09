@@ -1,32 +1,29 @@
 // Copyright (c), 2022-2024, Mist Studio.
 
 // created by John on 24-7-1.
-#include <QQmlApplicationEngine>
 #include <QApplication>
-#include <QWidget>
+#include <QHBoxLayout>
+#include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickItem>
-#include <QHBoxLayout>
 #include <QQuickView>
-
-#include <gst/gst.h>
-#include <QMainWindow>
+#include <QWidget>
 #include "player/GstPlayerWidget.h"
-
-//0bda:881a
+#include <QMainWindow>
+#include <QStyleFactory>
+#include <gst/gst.h>
 #include "wfb_ng_middleware.h"
 
 int main(int argc, char *argv[])
 {
+	gst_init(&argc, &argv);
 	QApplication app(argc, argv);
 
-        app.setOrganizationName("NULL");
-        app.setOrganizationDomain("NULL");
-        app.setApplicationName("RookieGOFPV_OPENIPC");
+	app.setOrganizationName("NULL");
+	app.setOrganizationDomain("NULL");
+	app.setApplicationName("RookieGOFPV_OPENIPC");
 
-	gst_init(&argc, &argv);
-
-	auto main_width = 800+200;
+	auto main_width = 800 + 200;
 	auto main_height = 600;
 
 	auto player_width = 800;
@@ -53,8 +50,10 @@ int main(int argc, char *argv[])
 	playerWidget.resize(player_width, player_height);
 	playerWidget.setMinimumWidth(player_width);
 	playerWidget.setMinimumHeight(player_height);
-	QString sampleUri = "videotestsrc pattern=ball ! video/x-raw,format=NV12,width=1920,height=1080,framerate=60/1";
-	playerWidget.setPlayUri(sampleUri);
+	QString sampleUri =
+		"videotestsrc pattern=ball ! "
+		"video/x-raw,format=NV12,width=1920,height=1080,framerate=60/1";
+//	playerWidget.setPlayUri(sampleUri);
 
 	layout->addWidget(&playerWidget);
 

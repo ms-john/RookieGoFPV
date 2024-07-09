@@ -7,8 +7,10 @@
 #ifndef GSTPLAYERWIDGET_H
 #define GSTPLAYERWIDGET_H
 
+#include <QThread>
 #include <QWidget>
 #include <gst/gst.h>
+
 namespace ms
 {
 namespace app
@@ -16,9 +18,33 @@ namespace app
 namespace player
 {
 
+class GstPlayerThread: public QThread
+{
+Q_OBJECT
+
+public:
+	GstPlayerThread(QObject *parent = nullptr, WId windowId = 0);
+	~GstPlayerThread();
+	void run() override;
+	bool setPlayUri(const QString &uri);
+	bool play();
+	bool pause();
+	bool stop();
+
+signals:
+	void errorOccurred(const QString &error);
+
+private:
+	GstElement *m_pipeline = nullptr;
+	GstElement *m_sink = nullptr;
+	QString m_play_uri;
+	WId windowId;
+};
+
 class GstPlayerWidget: public QWidget
 {
 Q_OBJECT
+
 public:
 	explicit GstPlayerWidget(QWidget *parent = nullptr);
 	~GstPlayerWidget();
@@ -28,18 +54,11 @@ public:
 	Q_INVOKABLE bool pause();
 	Q_INVOKABLE bool stop();
 
-signals:
-
-public slots:
-
 private:
-	GstElement *m_pipeline;
-	GstElement *m_sink;
-	QString m_play_uri;
-	WId windowId;
+	GstPlayerThread *m_thread = nullptr;
 };
-}
-}
-}
+} // namespace player
+} // namespace app
+} // namespace ms
 
-#endif //GSTPLAYERWIDGET_H
+#endif // GSTPLAYERWIDGET_H
