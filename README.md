@@ -24,3 +24,17 @@ mkdir build && cd build
 cmake .. -DCMAKE_PREFIX_PATH=/Users/john/Qt/6.5.3/macos/lib/cmake
 make -j$(nproc)
 ```
+
+---
+### How to run
+1. install homebrew,this is a package manager for macOS  
+visit [homebrew](https://brew.sh/) 
+2. use brew to install libsodium, libpcap, libusb, gstreamer, gst-plugins-base, gst-plugins-good, gst-plugins-bad, gst-plugins-ugly
+```shell
+brew install libsodium libpcap libusb gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly
+````
+3. install qt6
+```shell
+brew install qt
+```
+4. run
