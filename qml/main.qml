@@ -45,7 +45,7 @@ Item {
     function reset_settings() {
         settings.firstRun = true;
         settings.firstRun = false;
-        settings.wifi_card = "wlan0"
+        settings.wifi_card = "0bda:881a"
         settings.wifi_channel = 1
         settings.wifi_bandwidth = 20
         settings.wifi_key = "/etc/gs.key"
@@ -55,8 +55,12 @@ Item {
     FileDialog {
         id: fileDialog
         currentFolder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
-        onAccepted: {wifi_key = selectedFile
-            settings.wifi_key = selectedFile
+        onAccepted: {
+            var o_gs_path = selectedFile.toString()
+            var gs_path = o_gs_path.replace(/^file:\/\//, '')
+            console.log(gs_path)
+            wifi_key = gs_path
+            settings.wifi_key = gs_path
         }
     }
 
@@ -138,10 +142,7 @@ Item {
                         height: 50
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         Layout.rightMargin: 10
-                        model: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
-                            '32', '36', '40', '44', '48', '52', '56', '60', '64', '68', '96', '100', '104', '108', '112', '116', '120',
-                            '124', '128', '132', '136', '140', '144', '149', '153', '157', '161', '169', '173', '177'
-                        ]
+                        model: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '32', '36', '40', '44', '48', '52', '56', '60', '64', '68', '96', '100', '104', '108', '112', '116', '120', '124', '128', '132', '136', '140', '144', '149', '153', '157', '161', '169', '173', '177']
                         Component.onCompleted: {
                             for (var i = 0; i < model.length; i++) {
                                 if (model[i] === settings.wifi_channel.toString()) {
