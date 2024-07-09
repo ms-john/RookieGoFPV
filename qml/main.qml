@@ -81,7 +81,7 @@ Item {
                     Label {
                         width: 80
                         height: 50
-                        text: "Device"
+                        text: qsTr("Device")
                         font.pixelSize: 14
                         Layout.leftMargin: 10
                         Layout.alignment: Qt.AlignLeft
@@ -131,7 +131,7 @@ Item {
                     Label {
                         width: 80
                         height: 50
-                        text: "Channel"
+                        text: qsTr("Channel")
                         font.pixelSize: 14
                         Layout.leftMargin: 10
                         Layout.alignment: Qt.AlignLeft
@@ -168,7 +168,7 @@ Item {
                     Label {
                         width: 80
                         height: 50
-                        text: "Bandwidth"
+                        text: qsTr("Bandwidth")
                         font.pixelSize: 14
                         Layout.leftMargin: 10
                         Layout.alignment: Qt.AlignLeft
@@ -207,7 +207,7 @@ Item {
                     Label {
                         width: 80
                         height: 50
-                        text: "key"
+                        text: qsTr("key")
                         font.pixelSize: 14
                         Layout.leftMargin: 10
                         Layout.alignment: Qt.AlignLeft
@@ -238,7 +238,7 @@ Item {
                 height: 80
                 Button {
                     id: wfb_btn1
-                    text: isRunning ? "stop wfb" : "start wfb"
+                    text: isRunning ? qsTr("stop wfb") : qsTr("start wfb")
                     anchors.fill: parent
                     property var isRunning: false
                     onClicked: {
@@ -265,7 +265,7 @@ Item {
                     Label {
                         width: 80
                         height: 50
-                        text: "Codec"
+                        text: qsTr("Codec")
                         font.pixelSize: 14
                         Layout.leftMargin: 10
                         Layout.alignment: Qt.AlignLeft
@@ -318,7 +318,7 @@ Item {
     }
 
     Image {
-        id: image
+        id: rest_image
         width: 20
         height: 20
         anchors.right: parent.right
@@ -326,11 +326,27 @@ Item {
         anchors.rightMargin: 10
         anchors.bottomMargin: 10
         source: "qrc:/assets/refresh.svg"
+
         MouseArea {
+            id: rest_image_mouse
             anchors.fill: parent
+            hoverEnabled: true
             onClicked: {
                 reset_settings()
             }
+            onEntered: {
+                rest_image_tooltip.visible = true
+            }
+            onExited: {
+                rest_image_tooltip.visible = false
+            }
+        }
+        ToolTip {
+            id: rest_image_tooltip
+            parent: rest_image
+            visible: false
+            text: qsTr("Reset settings")
+            timeout: 1000
         }
     }
 }
