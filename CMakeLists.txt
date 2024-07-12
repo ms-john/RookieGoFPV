@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-set(PROJECT_NAME RookieGoFPV)
+set(PROJECT_NAME FPV-Toolbox)
 set(APP_NAME ${PROJECT_NAME})
 project(${PROJECT_NAME} VERSION 0.1 LANGUAGES CXX)
 
@@ -32,10 +32,23 @@ include_directories(
     rtl8812/hal
 )
 
+add_library(wfb-ng STATIC
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src/fec.c
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src/fec.h
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src/ieee80211_radiotap.h
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src/radiotap.c
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src/rx.cpp
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src/rx.hpp
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src/wifibroadcast.hpp
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src/wifibroadcast.cpp)
+set_target_properties(wfb-ng PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/wfb-ng)
+target_include_directories(wfb-ng PUBLIC ${CMAKE_SOURCE_DIR}/wfb-ng)
+target_compile_definitions(wfb-ng PRIVATE __WFB_RX_SHARED_LIBRARY__)
+
 file(GLOB_RECURSE WFB_NG_SOURCES
-    src/wfb-ng/*.h
-    src/wfb-ng/*.c
-    src/wfb-ng/*.cpp
+#    wfb-ng/src/*.h
+#    wfb-ng/src/*.c
+#    wfb-ng/src/*.cpp
 )
 
 include(monitor.cmake)
@@ -43,14 +56,11 @@ include(monitor.cmake)
 set(PROJECT_SOURCES
     resource.qrc
     src/main.cpp
-    src/player/GstPlayerWidget.h
-    src/player/GstPlayerWidget.cpp
+#    src/player/GstPlayerWidget.h
+#    src/player/GstPlayerWidget.cpp
     ${WFB_NG_SOURCES}
-    src/wfb_ng_middleware.cpp
-    src/wfb_ng_middleware.h
-    src/wfb_api.h
-    src/wfb_api.cpp
-    src/wfb-ng/wifibroadcast.h
+#    src/wfb_ng_middleware.cpp
+#    src/wfb_ng_middleware.h
 )
 
 if (6 GREATER_EQUAL 6)
@@ -98,6 +108,7 @@ target_link_libraries(${APP_NAME}
     ${LIBUSB_LIBRARIES}
     Rtl8812auNet
     PkgConfig::LIBSODIUM
+    wfb-ng
 )
 
 include(GNUInstallDirs)

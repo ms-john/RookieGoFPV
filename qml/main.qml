@@ -8,11 +8,12 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 import QtCore
 
-Item {
+ApplicationWindow {
     id: root
     width: 200
     height: 600
     visible: true
+    title:qsTr("RookieFPV-ToolBox for WFB-NG/OpenIPC-FPV (macOS)")
 
     Settings {
         id: settings

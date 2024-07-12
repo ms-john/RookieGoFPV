@@ -8,7 +8,6 @@
 #define WFB_NG_MIDDLEWARE_H
 
 #include <QObject>
-#include "wfb-ng/WFBReceiver.h"
 
 class wfb_ng_middleware: public QObject
 {
@@ -26,7 +25,7 @@ private:
 	qulonglong m_wfbng_wifi_frame_count;
 
 	int m_wfbng_channel;
-	WFBReceiver *m_wfb_receiver;
+//	WFBReceiver *m_wfb_receiver;
 
 signals:
 	void startWFBReceiver(const QString &vidPid, uint8_t channel, int channelWidth, const QString &keyPath);
