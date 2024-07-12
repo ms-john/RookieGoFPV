@@ -17,7 +17,12 @@ int main(int argc, char *argv[])
 
 	//("RookieGoFPV for WFB-NG/OpenIPC-FPV (macOS)");
 
+        wfb_ng_middleware wfbNgMiddleware;
+
         QQmlApplicationEngine engine;
+
+        engine.rootContext()->setContextProperty("wfbNG", &wfbNgMiddleware);
+
         const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
         QObject::connect(
             &engine,

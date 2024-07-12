@@ -23,6 +23,11 @@ pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-video-1.0 gstreamer
 pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 # libsodium
 pkg_check_modules(LIBSODIUM REQUIRED IMPORTED_TARGET libsodium)
+# spdlog
+pkg_check_modules(SPDLOG REQUIRED spdlog)
+# libpcap
+set(LIBPCAP_HEADERS /opt/homebrew/opt/libpcap/include)
+set(LIBPCAP_LIBS /opt/homebrew/opt/libpcap/lib)
 
 include_directories(
     ${GSTREAMER_INCLUDE_DIRS}
@@ -30,6 +35,14 @@ include_directories(
     ${LIBPCAP_HEADERS}
     rtl8812/src
     rtl8812/hal
+    ${SPDLOG_INCLUDE_DIRS}
+)
+
+include_directories(
+    ${LIBPCAP_HEADERS}
+    ${LIBSOIDUM_INCLUDE_DIRS}
+    ${LIBUSB_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_library(wfb-ng STATIC
@@ -41,14 +54,32 @@ add_library(wfb-ng STATIC
     ${CMAKE_SOURCE_DIR}/wfb-ng/src/rx.hpp
     ${CMAKE_SOURCE_DIR}/wfb-ng/src/wifibroadcast.hpp
     ${CMAKE_SOURCE_DIR}/wfb-ng/src/wifibroadcast.cpp)
-set_target_properties(wfb-ng PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/wfb-ng)
-target_include_directories(wfb-ng PUBLIC ${CMAKE_SOURCE_DIR}/wfb-ng)
-target_compile_definitions(wfb-ng PRIVATE __WFB_RX_SHARED_LIBRARY__)
+target_include_directories(
+    wfb-ng
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/wfb-ng/src
+    ${LIBSOIDUM_INCLUDE_DIRS}
+    ${LIBPCAP_HEADERS}
+)
+target_link_directories(
+    wfb-ng
+    PRIVATE
+    ${LIBSOIDUM_LIBRARY_DIRS}
+    ${LIBPCAP_LIBRARY_DIRS}
+)
+target_link_libraries(
+    wfb-ng
+    PRIVATE
+    PkgConfig::LIBSODIUM
+    ${LIBPCAP_LIBRARIES}
+    pcap
+)
 
 file(GLOB_RECURSE WFB_NG_SOURCES
-#    wfb-ng/src/*.h
-#    wfb-ng/src/*.c
-#    wfb-ng/src/*.cpp
+    src/gehee/RxFrame.h
+    src/gehee/RxFrame.cpp
+    src/gehee/WfbngLink.hpp
+    src/gehee/WfbngLink.cpp
 )
 
 include(monitor.cmake)
@@ -56,11 +87,11 @@ include(monitor.cmake)
 set(PROJECT_SOURCES
     resource.qrc
     src/main.cpp
-#    src/player/GstPlayerWidget.h
-#    src/player/GstPlayerWidget.cpp
+    #    src/player/GstPlayerWidget.h
+    #    src/player/GstPlayerWidget.cpp
     ${WFB_NG_SOURCES}
-#    src/wfb_ng_middleware.cpp
-#    src/wfb_ng_middleware.h
+    src/wfb_ng_middleware.cpp
+    src/wfb_ng_middleware.h
 )
 
 if (6 GREATER_EQUAL 6)
@@ -86,7 +117,7 @@ endif ()
 # explicit, fixed bundle identifier manually though.
 set_target_properties(${APP_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER com.example.RookieGoFPV
-#    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    #    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
@@ -98,6 +129,7 @@ target_link_directories(
     ${GSTREAMER_LIBRARY_DIRS}
     ${LIBUSB_LIBRARY_DIRS}
     ${LIBSOIDUM_LIBRARY_DIRS}
+    ${SPDLOG_LIBRARY_DIRS}
 )
 
 target_link_libraries(${APP_NAME}
@@ -109,6 +141,7 @@ target_link_libraries(${APP_NAME}
     Rtl8812auNet
     PkgConfig::LIBSODIUM
     wfb-ng
+    ${SPDLOG_LIBRARIES}
 )
 
 include(GNUInstallDirs)
