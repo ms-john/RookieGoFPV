@@ -8,7 +8,7 @@ The macOS application serves as a decoder for H.264 and H.265 video streams, sea
 
 Supported rtl8812au WiFi adapter only.
 
-It is recommended to use with [OpenIPC](https://github.com/OpenIPC) FPV
+It is recommended to use with [wfb-ng](https://github.com/svpcom/wfb-ng)
 
 ![img.png](doc/white-page.jpg)
 
