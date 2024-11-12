@@ -13,7 +13,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Gui)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Gui Bluetooth)
 
 # pkgconfig
 find_package(PkgConfig REQUIRED)
@@ -30,6 +30,7 @@ include_directories(
     ${LIBPCAP_HEADERS}
     rtl8812/src
     rtl8812/hal
+    src/player
 )
 
 file(GLOB_RECURSE WFB_NG_SOURCES
@@ -43,14 +44,14 @@ include(monitor.cmake)
 set(PROJECT_SOURCES
     resource.qrc
     src/main.cpp
-    src/player/GstPlayerWidget.h
-    src/player/GstPlayerWidget.cpp
     ${WFB_NG_SOURCES}
     src/wfb_ng_middleware.cpp
     src/wfb_ng_middleware.h
     src/wfb_api.h
     src/wfb_api.cpp
     src/wfb-ng/wifibroadcast.h
+    src/player/VideoStream.h
+    src/player/VideoStream.cpp
 )
 
 if (6 GREATER_EQUAL 6)
@@ -94,6 +95,7 @@ target_link_libraries(${APP_NAME}
     PRIVATE Qt6::Quick
     Qt6::Widgets
     Qt6::Gui
+    Qt6::Bluetooth
     ${GSTREAMER_LIBRARIES}
     ${LIBUSB_LIBRARIES}
     Rtl8812auNet

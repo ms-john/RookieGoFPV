@@ -1,75 +1,41 @@
 // Copyright (c), 2022-2024, Mist Studio.
 
-// created by John on 24-7-1.
+// Modified by lemon on 24-11-11.
+#include "wfb_ng_middleware.h"
 #include <QApplication>
-#include <QHBoxLayout>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QQuickItem>
-#include <QQuickView>
-#include <QWidget>
-#include "player/GstPlayerWidget.h"
-#include <QMainWindow>
-#include <QStyleFactory>
+
 #include <gst/gst.h>
-#include "wfb_ng_middleware.h"
 
-int main(int argc, char *argv[])
+#include "VideoStream.h"
+
+
+int main(int argc, char* argv[])
 {
+	QGuiApplication app(argc, argv);
 	gst_init(&argc, &argv);
-	QApplication app(argc, argv);
+	QString app_path = QCoreApplication::applicationDirPath();
 
-	app.setOrganizationName("NULL");
-	app.setOrganizationDomain("NULL");
-	app.setApplicationName("RookieGOFPV_OPENIPC");
+	app.setOrganizationName("POCKETFPV");
+	app.setOrganizationDomain("");
+	app.setApplicationName("RookieGOFPV");
 
-	auto main_width = 800 + 200;
-	auto main_height = 600;
+	QString qt_version = qVersion();
 
-	auto player_width = 800;
-	auto player_height = 600;
+	VideoStream videoStream;
 
-	auto qml_width = 200;
-	auto qml_height = 600;
+	qmlRegisterType<WindowHelper>("com.pocketfpv.windowHelper", 1, 0, "WindowHelper");
 
-	QMainWindow mainwindow;
-	mainwindow.resize(main_width, main_height);
-	mainwindow.setObjectName("rootWidget");
-	mainwindow.setWindowTitle("RookieGoFPV for WFB-NG/OpenIPC-FPV (macOS)");
+	QQmlApplicationEngine engine;
+	engine.rootContext()->setContextProperty("qt_version", qt_version);
+	engine.rootContext()->setContextProperty("videoStream", &videoStream);
 
-	QWidget *centralWidget = new QWidget(&mainwindow);
-	QHBoxLayout *layout = new QHBoxLayout(centralWidget);
-	mainwindow.setCentralWidget(centralWidget);
-	centralWidget->resize(qml_width, qml_height);
-	centralWidget->setLayout(layout);
-	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setSpacing(0);
-
-	ms::app::player::GstPlayerWidget playerWidget;
-	playerWidget.setObjectName("playerWidget");
-	playerWidget.resize(player_width, player_height);
-	playerWidget.setMinimumWidth(player_width);
-	playerWidget.setMinimumHeight(player_height);
-	QString sampleUri =
-		"videotestsrc pattern=ball ! "
-		"video/x-raw,format=NV12,width=1920,height=1080,framerate=60/1";
-//	playerWidget.setPlayUri(sampleUri);
-
-	layout->addWidget(&playerWidget);
+	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
 	wfb_ng_middleware wfbNgMiddleware;
 
-	QQuickView qmlView;
-	QWidget *container = QWidget::createWindowContainer(&qmlView);
-	container->resize(qml_width, qml_height);
-	qmlView.resize(qml_width, qml_height);
-	qmlView.setResizeMode(QQuickView::SizeViewToRootObject);
-	layout->addWidget(container);
-	qmlView.setSource(QUrl("qrc:/qml/main.qml"));
-	qmlView.rootContext()->setContextProperty("player", &playerWidget);
-	qmlView.rootContext()->setContextProperty("wfbNG", &wfbNgMiddleware);
-	layout->addWidget(container);
-	mainwindow.show();
+	engine.rootContext()->setContextProperty("wfbNG", &wfbNgMiddleware);
 
 	return app.exec();
 }
